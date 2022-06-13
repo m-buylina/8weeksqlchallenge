@@ -70,3 +70,24 @@ GROUP BY product_name
 Ramen is the most purchased item!
 
 5. Which item was the most popular for each customer?
+``` SQL
+SELECT customer_id, product_name, count_prod FROM (
+SELECT customer_id, product_name, count_prod, RANK() OVER(PARTITION BY customer_id ORDER BY count_prod DESC) AS rnk
+FROM (
+SELECT customer_id, product_name, COUNT(*) AS count_prod FROM dannys_diner.sales AS s
+JOIN dannys_diner.menu AS m ON s.product_id = m.product_id
+GROUP BY customer_id, product_name
+  ) AS grouped
+  ) AS ranked
+WHERE rnk = 1
+```
+
+| customer_id | product_name | count_prod |
+| ----------- | ------------ | ---------- |
+| A           | ramen        | 3          |
+| B           | ramen        | 2          |
+| B           | curry        | 2          |
+| B           | sushi        | 2          |
+| C           | ramen        | 3          |
+
+
