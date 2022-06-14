@@ -69,6 +69,7 @@ GROUP BY product_name
 
 Ramen is the most purchased item!
 
+---
 5. Which item was the most popular for each customer?
 ``` SQL
 SELECT customer_id, product_name, count_prod FROM (
@@ -90,4 +91,22 @@ WHERE rnk = 1
 | B           | sushi        | 2          |
 | C           | ramen        | 3          |
 
+---
+6. Which item was purchased first by the customer after they became a member?
+``` SQL
+SELECT customer_id, join_date, order_date, product_name FROM (
+SELECT s.customer_id, join_date, MIN(product_id) AS product_id, MIN(order_date) AS order_date
+FROM dannys_diner.sales as s
+JOIN dannys_diner.members AS memb ON s.customer_id = memb.customer_id
+WHERE order_date >= join_date 
+GROUP BY s.customer_id, join_date) AS joined
+JOIN dannys_diner.menu AS menu ON menu.product_id = joined.product_id
+```
 
+
+| customer_id | join_date                | order_date               | product_name |
+| ----------- | ------------------------ | ------------------------ | ------------ |
+| B           | 2021-01-09               | 2021-01-11               | sushi        |
+| A           | 2021-01-07               | 2021-01-07               | curry        |
+
+---
