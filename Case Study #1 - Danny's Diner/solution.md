@@ -110,3 +110,22 @@ JOIN dannys_diner.menu AS menu ON menu.product_id = joined.product_id
 | A           | 2021-01-07               | 2021-01-07               | curry        |
 
 ---
+7. Which item was purchased just before the customer became a member?
+``` SQL
+SELECT customer_id, join_date, product_name, order_date FROM (
+SELECT s.customer_id, join_date, product_name, order_date,
+RANK() OVER(PARTITION BY s.customer_id ORDER BY order_date DESC) AS rnk
+FROM dannys_diner.sales AS s
+JOIN dannys_diner.members AS mem ON mem.customer_id = s.customer_id
+JOIN dannys_diner.menu AS m ON s.product_id = m.product_id
+WHERE order_date < join_date) AS ranked
+WHERE rnk = 1
+```
+
+| customer_id | join_date                | product_name | order_date               |
+| ----------- | ------------------------ | ------------ | ------------------------ |
+| A           | 2021-01-07               | sushi        | 2021-01-01               |
+| A           | 2021-01-07               | curry        | 2021-01-01               |
+| B           | 2021-01-09               | sushi        | 2021-01-04               |
+
+---
