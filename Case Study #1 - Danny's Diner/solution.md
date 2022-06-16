@@ -129,3 +129,21 @@ WHERE rnk = 1
 | B           | 2021-01-09               | sushi        | 2021-01-04               |
 
 ---
+8. What is the total items and amount spent for each member before they became a member?
+``` SQL
+SELECT sales.customer_id, SUM(price) AS total_amount, COUNT(*) AS total_items
+FROM dannys_diner.sales AS sales
+JOIN dannys_diner.members AS members
+ON sales.customer_id = members.customer_id
+JOIN dannys_diner.menu AS menu
+ON menu.product_id = sales.product_id
+WHERE order_date < join_date
+GROUP BY sales.customer_id
+```
+
+| customer_id | total_amount | total_items |
+| ----------- | ------------ | ----------- |
+| B           | 40           | 3           |
+| A           | 25           | 2           |
+
+---
