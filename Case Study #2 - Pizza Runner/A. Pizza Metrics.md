@@ -21,3 +21,19 @@ FROM pizza_runner.customer_orders
 | 10    |
 
 ---
+3. How many successful orders were delivered by each runner?
+```SQL
+SELECT runner_id, COUNT(order_id) FROM runner_orders_temp
+WHERE cancellation IS NULL OR distance IS NOT NULL
+GROUP BY runner_id;
+```
+
+| runner_id | count |
+| --------- | ----- |
+| 3         | 1     |
+| 2         | 3     |
+| 1         | 4     |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
