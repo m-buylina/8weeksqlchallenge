@@ -34,6 +34,25 @@ GROUP BY runner_id;
 | 2         | 3     |
 | 1         | 4     |
 
+4. How many of each type of pizza was delivered?
+``` SQL
+SELECT customer_orders_temp.pizza_id, pizza_name, COUNT(*) FROM runner_orders_temp
+JOIN customer_orders_temp
+ON runner_orders_temp.order_id = customer_orders_temp.order_id
+JOIN pizza_runner.pizza_names AS pizza_names
+ON customer_orders_temp.pizza_id = pizza_names.pizza_id
+WHERE cancellation IS NULL
+GROUP BY customer_orders_temp.pizza_id, pizza_name
+```
+
+| pizza_id | pizza_name | count |
+| -------- | ---------- | ----- |
+| 1        | Meatlovers | 9     |
+| 2        | Vegetarian | 3     |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
 ---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
