@@ -50,9 +50,39 @@ GROUP BY customer_orders_temp.pizza_id, pizza_name
 | 1        | Meatlovers | 9     |
 | 2        | Vegetarian | 3     |
 
----
+5. How many Vegetarian and Meatlovers were ordered by each customer?
+``` SQL
+SELECT customer_id, pizza_names, COUNT(pizza_names) FROM customer_orders_temp
+JOIN pizza_runner.pizza_names AS pizza_names
+ON customer_orders_temp.pizza_id = pizza_names.pizza_id
+GROUP BY customer_id, pizza_names
+ORDER BY customer_id
+```
 
-[View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
+| customer_id | pizza_names    | count |
+| ----------- | -------------- | ----- |
+| 101         | (1,Meatlovers) | 2     |
+| 101         | (2,Vegetarian) | 1     |
+| 102         | (1,Meatlovers) | 2     |
+| 102         | (2,Vegetarian) | 1     |
+| 103         | (1,Meatlovers) | 3     |
+| 103         | (2,Vegetarian) | 1     |
+| 104         | (1,Meatlovers) | 3     |
+| 105         | (2,Vegetarian) | 1     |
+
+---
+6. What was the maximum number of pizzas delivered in a single order?
+```SQL
+SELECT order_id, COUNT(*) as count_p FROM customer_orders_temp
+GROUP BY order_id
+ORDER BY count_p DESC 
+LIMIT 1
+```
+
+| order_id | count_p |
+| -------- | ------- |
+| 4        | 3       |
+
 ---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
