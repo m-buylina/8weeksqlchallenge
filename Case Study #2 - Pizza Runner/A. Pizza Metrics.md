@@ -84,5 +84,74 @@ LIMIT 1
 | 4        | 3       |
 
 ---
+7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+```SQL
+SELECT
+customer_id,
+SUM(CASE WHEN exclusions != '' OR extras != '' THEN 1 ELSE 0 END) AS changed,
+SUM(CASE WHEN exclusions = '' AND extras = '' THEN 1 ELSE 0 END) AS not_changed
+FROM customer_orders_temp
+JOIN runner_orders_temp ON customer_orders_temp.order_id = runner_orders_temp.order_id
+WHERE cancellation IS NULL
+GROUP BY customer_id
+```
+
+| customer_id | changed | not_changed |
+| ----------- | ------- | ----------- |
+| 101         | 0       | 2           |
+| 102         | 0       | 3           |
+| 103         | 3       | 0           |
+| 104         | 2       | 1           |
+| 105         | 1       | 0           |
+
+---
+8. How many pizzas were delivered that had both exclusions and extras?
+``` SQL
+SELECT COUNT(*) FROM customer_orders_temp
+JOIN runner_orders_temp ON customer_orders_temp.order_id = runner_orders_temp.order_id
+WHERE exclusions != '' AND extras != '' AND cancellation IS NULL
+```
+
+| count |
+| ----- |
+| 1     |
+
+---
+9. What was the total volume of pizzas ordered for each hour of the day?
+``` SQL
+SELECT
+  DATE_PART('hour', order_time) AS hour_order,
+  COUNT(*)
+FROM customer_orders_temp
+GROUP BY hour_order
+ORDER BY hour_order
+```
+| hour_order | count |
+| ---------- | ----- |
+| 11         | 1     |
+| 13         | 3     |
+| 18         | 3     |
+| 19         | 1     |
+| 21         | 3     |
+| 23         | 3     |
+
+---
+10. What was the volume of orders for each day of the week?
+``` SQL
+SELECT
+  to_char(order_time, 'Day') AS week_day,
+  COUNT(DISTINCT order_id)
+FROM customer_orders_temp
+GROUP BY to_char(order_time, 'Day')
+```
+
+| week_day  | count |
+| --------- | ----- |
+| Friday    | 1     |
+| Saturday  | 2     |
+| Thursday  | 2     |
+| Wednesday | 5     |
+
+---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
