@@ -37,9 +37,29 @@ SELECT AVG(arrive_time) FROM (
 | ------ |
 | 15.625 |
 
+---
+3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
+```SQL
+SELECT count_pizzas, AVG(time_prepare) FROM (
+  SELECT
+    customer_orders_temp.order_id,
+    COUNT(pizza_id) as count_pizzas,
+    EXTRACT('minutes' FROM (pickup_time - order_time)) AS time_prepare
+  FROM customer_orders_temp
+  JOIN runner_orders_temp
+  ON customer_orders_temp.order_id = runner_orders_temp.order_id
+  WHERE cancellation IS NULL
+  GROUP BY customer_orders_temp.order_id, EXTRACT('minutes' FROM (pickup_time - order_time))) AS prep
+GROUP BY count_pizzas
+ORDER BY count_pizzas;
+```
+| count_pizzas | avg |
+| ------------ | --- |
+| 1            | 12  |
+| 2            | 18  |
+| 3            | 29  |
 
 ---
 
-[View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
