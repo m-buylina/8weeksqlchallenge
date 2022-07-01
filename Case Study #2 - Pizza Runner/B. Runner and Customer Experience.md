@@ -60,6 +60,25 @@ ORDER BY count_pizzas;
 | 3            | 29  |
 
 ---
+4. What was the average distance travelled for each customer?
+``` SQL
+SELECT customer_id, AVG(distance) as avg_distance FROM (
+  SELECT DISTINCT order_id, customer_id
+  FROM customer_orders_temp) AS dist_orders
+JOIN runner_orders_temp
+ON dist_orders.order_id = runner_orders_temp.order_id
+WHERE cancellation IS NULL
+GROUP BY customer_id
+```
 
+| customer_id | avg_ |
+| ----------- | ---- |
+| 101         | 20   |
+| 102         | 18.4 |
+| 103         | 23.4 |
+| 104         | 10   |
+| 105         | 25   |
+
+---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
