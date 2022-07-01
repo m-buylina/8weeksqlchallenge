@@ -111,7 +111,26 @@ WHERE cancellation IS NULL
 | 2         | 8        | 94       |
 | 1         | 10       | 60       |
 
----
+
 In general the average speed accounted for 45 (without 94), but there is extreme value 94. Сould this be an error in the database?
+---
+7. What is the successful delivery percentage for each runner?
+``` SQL
+SELECT 
+  runner_id,
+  (SUM(CASE WHEN cancellation IS NULL THEN 1 ELSE 0 END)::float /
+    COUNT(*) * 100) as success_percent
+FROM runner_orders_temp
+GROUP BY runner_id
+ORDER BY success_percent DESC
+```
+
+| runner_id | success_percent |
+| --------- | --------------- |
+| 1         | 100             |
+| 2         | 75              |
+| 3         | 50              |
+
+---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
