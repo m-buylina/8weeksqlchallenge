@@ -80,5 +80,38 @@ GROUP BY customer_id
 | 105         | 25   |
 
 ---
+5. What was the difference between the longest and shortest delivery times for all orders?
+``` SQL
+SELECT MAX(duration) - MIN(duration) as diff FROM runner_orders_temp
+WHERE cancellation IS NULL
+```
+
+| diff |
+| ---- |
+| 30   |
+
+---
+6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
+``` SQL
+SELECT 
+  runner_id,
+  order_id,
+  ROUND((distance / duration  * 60)) AS avg_speed_km_h
+FROM runner_orders_temp
+WHERE cancellation IS NULL
+```
+| runner_id | order_id | avg_km_h |
+| --------- | -------- | -------- |
+| 1         | 1        | 38       |
+| 1         | 2        | 44       |
+| 1         | 3        | 40       |
+| 2         | 4        | 35       |
+| 3         | 5        | 40       |
+| 2         | 7        | 60       |
+| 2         | 8        | 94       |
+| 1         | 10       | 60       |
+
+---
+In general the average speed accounted for 45 (without 94), but there is extreme value 94. Сould this be an error in the database?
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
