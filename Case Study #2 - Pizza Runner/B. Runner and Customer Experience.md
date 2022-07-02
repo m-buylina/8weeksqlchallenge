@@ -112,7 +112,7 @@ WHERE cancellation IS NULL
 | 1         | 10       | 60       |
 
 
-In general the average speed accounted for 45 (without 94), but there is extreme value 94. Сould this be an error in the database?
+#### In general the average speed accounted for 45 (without 94), but there is extreme value 94. Сould this be an error in the database?
 ---
 7. What is the successful delivery percentage for each runner?
 ``` SQL
