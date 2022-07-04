@@ -21,5 +21,25 @@ GROUP BY pizza_name;
 | Vegetarian | Cheese,Mushrooms,Onions,Peppers,Tomatoes,Tomato Sauce          |
 
 ---
+2. What was the most commonly added extra?
+``` SQL
+SELECT pizza_toppings.topping_name, COUNT(*) AS count FROM (
+  SELECT string_to_array(extras, ', ')::int[] AS extras
+  FROM customer_orders_temp
+  WHERE extras != ''
+) AS l
+JOIN pizza_runner.pizza_toppings AS pizza_toppings
+ON pizza_toppings.topping_id = ANY(l.extras)
+GROUP BY topping_name
+ORDER BY count DESC
+```
+
+| topping_name | count |
+| ------------ | ----- |
+| Bacon        | 4     |
+| Chicken      | 1     |
+| Cheese       | 1     |
+
+---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
