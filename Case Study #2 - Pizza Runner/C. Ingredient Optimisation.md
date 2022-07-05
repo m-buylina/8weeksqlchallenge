@@ -41,5 +41,32 @@ ORDER BY count DESC
 | Cheese       | 1     |
 
 ---
+3. What was the most common exclusion?
+``` SQL
+SELECT topping_name, COUNT(*) AS count FROM (
+  SELECT string_to_array(exclusions, ', ')::int[] AS exclusions
+  FROM customer_orders_temp
+  WHERE exclusions != ''
+) AS l
+JOIN pizza_runner.pizza_toppings AS pizza_toppings
+ON pizza_toppings.topping_id = ANY(l.exclusions)
+GROUP BY topping_name
+ORDER BY count DESC;
+```
 
+| topping_name | count |
+| ------------ | ----- |
+| Cheese       | 4     |
+| Mushrooms    | 1     |
+| BBQ Sauce    | 1     |
+
+---
+
+4. Generate an order item for each record in the customers_orders table in the format of one of the following:
+- Meat Lovers
+- Meat Lovers - Exclude Beef
+- Meat Lovers - Extra Bacon
+- Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
+
+---
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
