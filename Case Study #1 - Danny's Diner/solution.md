@@ -99,11 +99,11 @@ WHERE rnk = 1
 6. Which item was purchased first by the customer after they became a member?
 ``` SQL
 SELECT customer_id, join_date, order_date, product_name FROM (
-SELECT s.customer_id, join_date, MIN(product_id) AS product_id, MIN(order_date) AS order_date
-FROM dannys_diner.sales as s
-JOIN dannys_diner.members AS memb ON s.customer_id = memb.customer_id
-WHERE order_date >= join_date 
-GROUP BY s.customer_id, join_date) AS joined
+  SELECT s.customer_id, join_date, MIN(product_id) AS product_id, MIN(order_date) AS order_date
+  FROM dannys_diner.sales as s
+  JOIN dannys_diner.members AS memb ON s.customer_id = memb.customer_id
+  WHERE order_date >= join_date 
+  GROUP BY s.customer_id, join_date) AS joined
 JOIN dannys_diner.menu AS menu ON menu.product_id = joined.product_id
 ```
 
