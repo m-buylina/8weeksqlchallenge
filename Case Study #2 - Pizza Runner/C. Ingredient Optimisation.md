@@ -134,7 +134,67 @@ FROM (
 
 ---
 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
-6. For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
+For example: "2xBacon, Beef, ... , Salami"
+
+``` SQL
+WITH pizza_orig_toppings AS (
+  SELECT pizza_id, array_agg(topping_name) AS toppings
+  FROM (
+    SELECT  pizza_id, string_to_array(toppings, ', ')::int[] AS toppings
+    FROM pizza_runner.pizza_recipes
+  ) AS p
+  JOIN pizza_runner.pizza_toppings AS pizza_toppings
+  ON pizza_toppings.topping_id = ANY(p.toppings)
+  GROUP BY pizza_id
+),
+customer_orders_arr AS (
+  SELECT order_id, customer_id, pizza_id,
+    ARRAY_REMOVE(array_agg(topping_name), NULL) AS extras_str,
+    extras
+  FROM (
+    SELECT 
+      ROW_NUMBER() OVER(ORDER BY order_id) AS row_id,
+      order_id, customer_id, pizza_id,
+    string_to_array(extras, ', ')::int[] AS extras
+  FROM customer_orders_temp) AS f
+  LEFT JOIN pizza_runner.pizza_toppings AS pizza_toppings
+  ON pizza_toppings.topping_id = ANY(f.extras)
+  GROUP BY row_id, order_id, customer_id, pizza_id, extras
+)
+
+SELECT 
+  order_id, customer_id, customer_orders_arr.pizza_id,
+  extras,
+  array_to_string (
+  CASE 
+  	WHEN extras_str[1] IS NOT NULL
+    THEN array_replace(array_replace(toppings, extras_str[1], concat('2x',extras_str[1])), extras_str[2], concat('2x',extras_str[2]))
+    ELSE toppings
+  END,  ', ')AS resullt
+FROM customer_orders_arr
+JOIN pizza_orig_toppings
+ON customer_orders_arr.pizza_id = pizza_orig_toppings.pizza_id
+```
+
+| order_id | customer_id | pizza_id | extras | resullt                                                                   |
+| -------- | ----------- | -------- | ------ | ------------------------------------------------------------------------- |
+| 10       | 104         | 1        | 1,4    | 2xBacon, BBQ Sauce, Beef, 2xCheese, Chicken, Mushrooms, Pepperoni, Salami |
+| 4        | 103         | 1        |        | Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami     |
+| 4        | 103         | 1        |        | Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami     |
+| 4        | 103         | 2        |        | Cheese, Mushrooms, Onions, Peppers, Tomatoes, Tomato Sauce                |
+| 10       | 104         | 1        |        | Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami     |
+| 6        | 101         | 2        |        | Cheese, Mushrooms, Onions, Peppers, Tomatoes, Tomato Sauce                |
+| 2        | 101         | 1        |        | Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami     |
+| 5        | 104         | 1        | 1      | 2xBacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami   |
+| 9        | 103         | 1        | 1,5    | 2xBacon, BBQ Sauce, Beef, Cheese, 2xChicken, Mushrooms, Pepperoni, Salami |
+| 1        | 101         | 1        |        | Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami     |
+| 3        | 102         | 1        |        | Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami     |
+| 8        | 102         | 1        |        | Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami     |
+| 7        | 105         | 2        | 1      | Cheese, Mushrooms, Onions, Peppers, Tomatoes, Tomato Sauce                |
+| 3        | 102         | 2        |        | Cheese, Mushrooms, Onions, Peppers, Tomatoes, Tomato Sauce                |
+
+---
+
 7. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
