@@ -43,6 +43,39 @@ WHERE cancellation IS NULL
 | ----------- |
 | 142         |
 
+---
+3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
+
+```SQL
+CREATE TABLE IF NOT EXISTS runner_rates (
+  order_id int NOT NULL,
+  rate int NOT NULL
+);
+
+INSERT INTO runner_rates ("order_id", "rate")
+VALUES
+  (1, 4),
+  (2, 5),
+  (3, 5),
+  (4, 2),
+  (5, 4),
+  (7, 5),
+  (8, 5),
+  (10, 3);
+
+SELECT * FROM runner_rates
+```
+
+| order_id | rate |
+| -------- | ---- |
+| 1        | 4    |
+| 2        | 5    |
+| 3        | 5    |
+| 4        | 2    |
+| 5        | 4    |
+| 7        | 5    |
+| 8        | 5    |
+| 10       | 3    |
 
 ---
 
