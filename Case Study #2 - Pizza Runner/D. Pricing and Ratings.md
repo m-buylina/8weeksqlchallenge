@@ -78,5 +78,18 @@ SELECT * FROM runner_rates
 | 10       | 3    |
 
 ---
+4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful   deliveries?
+- customer_id
+- order_id
+- runner_id
+- rating
+- order_time
+- pickup_time
+- Time between order and pickup
+- Delivery duration
+- Average speed
+- Total number of pizzas
+
+---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
