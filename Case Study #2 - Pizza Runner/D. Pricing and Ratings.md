@@ -90,6 +90,38 @@ SELECT * FROM runner_rates
 - Average speed
 - Total number of pizzas
 
+``` SQL
+WITH grouped_pizza AS (
+  SELECT order_id, customer_id, order_time, COUNT(*) AS total_pizzas
+  FROM customer_orders_temp
+  GROUP BY order_id, customer_id, order_time
+)
+
+SELECT 
+  customer_id, grouped_pizza.order_id, runner_orders_temp.runner_id, 
+  rating, order_time, pickup_time,
+  EXTRACT('minute' from pickup_time - order_time) AS time_order_pickup,
+  duration,
+  ROUND(distance / duration * 60) AS avg_speed_km_h,
+  total_pizzas
+FROM grouped_pizza
+JOIN runner_orders_temp
+ON runner_orders_temp.order_id = grouped_pizza.order_id
+JOIN runner_rates
+ON runner_rates.order_id = runner_orders_temp.order_id
+```
+
+| customer_id | order_id | runner_id | rating | order_time               | pickup_time              | time_order_pickup | duration | avg_speed_km_h | total_pizzas |
+| ----------- | -------- | --------- | ------ | ------------------------ | ------------------------ | ----------------- | -------- | -------------- | ------------ |
+| 101         | 1        | 1         | 4      | 2020-01-01T18:05:02.000Z | 2020-01-01T18:15:34.000Z | 10                | 32       | 38             | 1            |
+| 101         | 2        | 1         | 5      | 2020-01-01T19:00:52.000Z | 2020-01-01T19:10:54.000Z | 10                | 27       | 44             | 1            |
+| 102         | 3        | 1         | 5      | 2020-01-02T23:51:23.000Z | 2020-01-03T00:12:37.000Z | 21                | 20       | 40             | 2            |
+| 103         | 4        | 2         | 2      | 2020-01-04T13:23:46.000Z | 2020-01-04T13:53:03.000Z | 29                | 40       | 35             | 3            |
+| 104         | 5        | 3         | 4      | 2020-01-08T21:00:29.000Z | 2020-01-08T21:10:57.000Z | 10                | 15       | 40             | 1            |
+| 105         | 7        | 2         | 5      | 2020-01-08T21:20:29.000Z | 2020-01-08T21:30:45.000Z | 10                | 25       | 60             | 1            |
+| 102         | 8        | 2         | 5      | 2020-01-09T23:54:33.000Z | 2020-01-10T00:15:02.000Z | 20                | 15       | 94             | 1            |
+| 104         | 10       | 1         | 3      | 2020-01-11T18:34:49.000Z | 2020-01-11T18:50:20.000Z | 15                | 10       | 60             | 2            |
+
 ---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
