@@ -123,5 +123,21 @@ ON runner_rates.order_id = runner_orders_temp.order_id
 | 104         | 10       | 1         | 3      | 2020-01-11T18:34:49.000Z | 2020-01-11T18:50:20.000Z | 15                | 10       | 60             | 2            |
 
 ---
+5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
+
+``` SQL
+SELECT SUM(price + distance * 0.3) AS total_sum
+FROM customer_orders_temp
+JOIN prices ON prices.pizza_id = customer_orders_temp.pizza_id
+JOIN runner_orders_temp ON runner_orders_temp.order_id = customer_orders_temp.order_id
+WHERE cancellation IS NULL
+```
+IS NULL;
+
+| total_sum |
+| --------- |
+| 202.62    |
+
+---
 
 [View on DB Fiddle](https://www.db-fiddle.com/f/7VcQKQwsS3CTkGRFG7vu98/65)
